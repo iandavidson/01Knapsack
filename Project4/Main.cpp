@@ -148,9 +148,12 @@ int main(int argc, char* argv[]) {
 
 			while (1) {
 				choice = 0;
-				cout << "Options: (1) display vectors, (2) quit, (3)task1, (4) task 2a, (5)task 2b\n";
+				cout << "Options: (1) display vectors, (2) quit, (3)Run 1 and 2 (4) Run 3 \n";
 				cin >> choice;
 
+
+				cout << endl << "Knapsack capacity = " << total[0];
+				cout << ". Total number of items = " << value.size() << endl << endl;
 				//Print vectors for testing
 				if (choice == 1)
 				{
@@ -177,16 +180,12 @@ int main(int argc, char* argv[]) {
 				else if (choice ==3)
 					{
 						task1(total, value, weight);
+						task2a(total, value, weight);
+						task2b(total, value, weight);
 					}
-				else if (choice == 4)//part 2a
-				{
-					task2a(total, value, weight);
-				}
-				else if (choice == 5)//part 2b
-				{
-					task2b(total, value, weight);
-				}
-
+					else if(choice ==4){
+						cout << "dont have the task 3 done" << endl;
+					}
 			}
 	return 0;
 }
@@ -360,7 +359,7 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	cout << "}" << endl;
 
 
-	cout << "Space-efficient Dynamic Programming time taken: " << totalTime << endl;
+	cout << "Space-efficient Dynamic Programming time taken: " << totalTime << endl << endl;
 
 	return;
 }
