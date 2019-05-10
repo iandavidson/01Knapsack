@@ -6,15 +6,18 @@
 #include <algorithm>
 #include "time.h"
 #include <cstdlib>
+//note if python is acting up uncomment ms_no_coredell
+//#define MS_NO_COREDLL
+#include <python.h>
 
 using namespace std;
 
 void buildVector(ifstream & input,vector<int> &temp);//takes the input from a file and puts it in a vector;
-void task1(vector<int> total, vector<int> value, vector<int> weight);
-void task2a(vector<int> tol, vector<int> val, vector<int> wei);//uses greedy to find the best set
+void task2a(vector<int> tol, vector<int> val, vector<int> wei);//uses greedy to find the best set 
 void task2b(vector<int> tol, vector<int> val, vector<int> wei);//uses the max heap to find best greedy set
 void heapInsert(vector< pair <float,int>> &arry, int val,int index);//insert into heap vector
 void heapDelMax(vector<pair <float,int>> &arry);//sorts the array useing the delete max algo
+void task2Plot();//plots all files
 
 int main(int argc, char* argv[]) {
 	int choice;
@@ -26,7 +29,7 @@ int main(int argc, char* argv[]) {
 	if (argc != 3) {
 		cout << "Incorrect input. Correct format: ./<exectuable.out> <total.txt> <value.txt> <weight.txt> \n";
 		//fix if possible
-
+		
 		new_argv.push_back("");//for const sake
 		cout << "please enter (c) or total sack size: ";
 		new_argv.push_back("");//for const sake
@@ -79,10 +82,10 @@ int main(int argc, char* argv[]) {
 
 	}
 
-
+		
 			while (1) {
 				choice = 0;
-				cout << "Options: (1) display vectors, (2) quit, (3)????, (4) task 2a, (5)taske 2b\n";
+				cout << "Options: (1) display vectors, (2) quit, (3)????, (4) task 2a, (5)task 2b, (6)task 3 plots\n";
 				cin >> choice;
 
 				//Print vectors for testing
@@ -105,7 +108,7 @@ int main(int argc, char* argv[]) {
 					}
 					cout << endl;
 				}
-				//Quit
+				//Quit	
 				else if (choice ==2)//quit
 					break;
 				else if (choice == 4)//part 2a
@@ -115,6 +118,12 @@ int main(int argc, char* argv[]) {
 				else if (choice == 5)//part 2b
 				{
 					task2b(total, value, weight);
+				}
+				else if (choice == 6)//need to plot 
+				{
+					//plot task 2 for all cases
+					task2Plot();
+
 				}
 
 			}
@@ -146,15 +155,15 @@ void buildVector(ifstream & input, vector<int> &temp)
 			if (tempWord.length() > 0)
 			{
 				//Once word is formatted,call insert with the word, the line of the input
-				//file it came from, the root of our tree, and the distinct word counter
+				//file it came from, the root of our tree, and the distinct word counter 
 				temp.push_back(stoi(tempWord));
 				//Clear out tempWord so we can use it again
 				tempWord.clear();
 			}
 		}
-
+	
 	}
-
+	
 }
 
 void task2a(vector<int> tol, vector<int> val, vector<int> wei)
@@ -163,7 +172,7 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 	vector<pair <float,int>> bestVal;//hold the ratio for best weight to value first(val),second(wei) by subset
 	int newTotal = 0;
 	double totalTime, finishTime, startTime = clock();//timers
-
+	
 
 	for (int i = 0; i < val.size(); i++)
 	{
@@ -180,15 +189,15 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 	while (1)//carefull
 	{
 		newTotal = newTotal + wei[bestVal[counter].second - 1];//add to total counter
-
+		
 		if (tol[0] < newTotal)//break clause
 		{
 			break;
 		}
 		totalValue = totalValue + val[bestVal[counter].second - 1];
-		cout << bestVal[counter].second << " ";//display
+		cout << bestVal[counter].second << " ";//display 
 		counter--;
-
+		
 	}
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
 	cout << "}" << endl;
@@ -233,7 +242,7 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 		else//
 		{
 			totalValue = totalValue + val[bestVal[counter].second - 1];
-			cout << bestVal[counter].second << " ";//display
+			cout << bestVal[counter].second << " ";//display 
 			counter--;
 		}
 	}
@@ -277,7 +286,7 @@ void heapInsert(vector<pair <float,int>>& arry, int val,int index)
 
 void heapDelMax(vector<pair <float,int>>& arry)
 {
-
+	
 	int arrySize = arry.size()-1;//store old size
 	while (arrySize != 0)
 	{
@@ -310,4 +319,14 @@ void heapDelMax(vector<pair <float,int>>& arry)
 		}
 	}
 
+}
+
+void task2Plot()//plots all files
+{
+	PyObject* graph;
+	//BMP graph1;//create image 
+	//graph1.ReadFromFile("graph1.txt");
+	//graph1.SetSize(640, 480);//set size
+	//graph1.SetBitDepth(8);//sets bit depth
+	//graph1.WriteToFile("graph1.txt");
 }
