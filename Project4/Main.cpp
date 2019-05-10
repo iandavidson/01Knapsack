@@ -59,7 +59,7 @@ public:
       list <node>::iterator i;
       for (i = table[index].begin(); i != table[index].end(); i++) {
         if (i->unique == key){
-					// cout << "node instance:"<< i->value << endl;
+					// cout << "node instance found :"<< i->value << endl;
           keyValue = i->value;
           return true;
         }
@@ -70,8 +70,8 @@ public:
   void insertNode(int key, int val){
     int slot = hashKey(key);
     node n;
-        n.unique = key;
-        n.value = val;
+    n.unique = key;
+    n.value = val;
 		// cout << "node:" << n.value << "  " << n.unique << endl;
     table[slot].push_back(n);
   }
@@ -148,12 +148,11 @@ int main(int argc, char* argv[]) {
 
 			while (1) {
 				choice = 0;
-				cout << "Options: (1) display vectors, (2) quit, (3)Run 1 and 2 (4) Run 3 \n";
+				cout << "Options: (1) display vectors, (2) quit, (3)Run 1 and 2 (4) Run 3 :";
 				cin >> choice;
 
 
-				cout << endl << "Knapsack capacity = " << total[0];
-				cout << ". Total number of items = " << value.size() << endl << endl;
+
 				//Print vectors for testing
 				if (choice == 1)
 				{
@@ -179,6 +178,8 @@ int main(int argc, char* argv[]) {
 					break;
 				else if (choice ==3)
 					{
+						cout << endl << "Knapsack capacity = " << total[0];
+						cout << ". Total number of items = " << value.size() << endl << endl;
 						task1(total, value, weight);
 						task2a(total, value, weight);
 						task2b(total, value, weight);
@@ -326,12 +327,18 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 
 				key = computeKey(i-1, tempWeight, value.size(), total[0]);
 				h.getKeyInTable(key, existsValue);
+				// cout << "maxValue found: " << maxValue << " tempWeight: " << tempWeight << endl;
 
-
-        if (maxValue == existsValue)
+				if(i == 1 && weight[i-1] <= tempWeight){ //weird edge case i couldn't cover for some reason
+					// cout << "just found index: " << i-1 << endl << endl;
+					optimalSetB.push_back(i-1);
+					maxValue -= value[i - 1];
+					tempWeight -= weight[i - 1];
+				}else if (maxValue == existsValue){
             continue;
-        else {
+        }else {
             // This item is included -> add it & make adjustments!
+						// cout << "just found index: " << i-1 << endl << endl;
 						optimalSetB.push_back(i-1);
             maxValue -= value[i - 1];
             tempWeight -= weight[i - 1];
