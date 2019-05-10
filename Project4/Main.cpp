@@ -18,7 +18,7 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei);//uses greedy to 
 void task2b(vector<int> tol, vector<int> val, vector<int> wei);//uses the max heap to find best greedy set
 void heapInsert(vector< pair <float,int>> &arry, int val,int index);//insert into heap vector
 void heapDelMax(vector<pair <float,int>> &arry);//sorts the array useing the delete max algo
-int memfunction(int i, int j, vector<int> value, vector<int> weight);
+int memfunction(int i, int j, vector<int> value, vector<int> weight, HashTable & H, int n, int w);
 int computeKey(int i, int j, int n, int w);
 
 int main(int argc, char* argv[]) {
@@ -245,9 +245,10 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	startTime = clock();//timers
 	// //totalWeight
 
-	HashTable h
-	vector<int> optimalSetB
-	newTotalB = memfunction(value.size(), total[0], value, weight, h , optimalSetB);
+	int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+	HashTable h = hashTable(k);
+	vector<int> optimalSetB;
+	newTotalB = memfunction(value.size(), total[0], value, weight, h , optimalSetB, value.size(), total[0]);
 
 
 	finishTime = clock();
@@ -261,17 +262,26 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 }
 int computeKey(int i, int j, int n, int w)
 {
+	//number of bits in n
+	int Bn = ceil(log2((double)(n+1)));
+	//number of bits in w
+	int Bw = ceil(log2((double)(w+1)));
+
 	//number of bits in i
-	// ceil(log(n+1, 2));
+	int Bi = ceil(log2((double)(i+1)));
 	//number of bits in j
-	// ceil(log(w+1, 2));
+	int Bj = ceil(log2((double)(j+1)));
 
-
+	int value = 1 <<  (Bn + Bw);
+	int result = i << Bw;
+	result = result | j;
+	result = result | value;
+	return result;
 
 }
 
 
-int memfunction(int i, int j, vector<int> value, vector<int> weight, HashTable H, int n, int w){
+int memfunction(int i, int j, vector<int> value, vector<int> weight, HashTable & H, int n, int w){
 	int upper, replace;
 	int existsValue = -1;
 
@@ -308,10 +318,6 @@ int memfunction(int i, int j, vector<int> value, vector<int> weight, HashTable H
 	}
 
 }
-
-
-
-
 
 
 

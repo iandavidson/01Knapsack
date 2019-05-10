@@ -50,4 +50,4 @@ public:
   list<node> table;
   int k; //# of slots in hashTable
 
-}
+};
