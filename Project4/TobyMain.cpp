@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -8,6 +9,7 @@
 #include <cstdlib>
 //note if python is acting up uncomment ms_no_coredell
 //#define MS_NO_COREDLL
+
 #include <python.h>
 
 using namespace std;
@@ -15,7 +17,7 @@ using namespace std;
 void buildVector(ifstream & input,vector<int> &temp);//takes the input from a file and puts it in a vector;
 void task2a(vector<int> tol, vector<int> val, vector<int> wei);//uses greedy to find the best set 
 void task2b(vector<int> tol, vector<int> val, vector<int> wei);//uses the max heap to find best greedy set
-void heapInsert(vector< pair <float,int>> &arry, int val,int index);//insert into heap vector
+void heapInsert(vector< pair <float,int>> &arry, float val,int index);//insert into heap vector
 void heapDelMax(vector<pair <float,int>> &arry);//sorts the array useing the delete max algo
 void task2Plot();//plots all files
 
@@ -46,17 +48,17 @@ int main(int argc, char* argv[]) {
 
 	if (noInputTripper == 1)//user input vs command line
 	{
-		ifstream inputX("p01_c.txt");//reading file one getting the total sack
+		ifstream inputX("p07_c.txt");//reading file one getting the total sack
 		if (inputX.is_open()) {
 			buildVector(inputX, total);//build the total vector
 			inputX.close();
 		}
-		ifstream inputY("p01_v.txt");//reading the second file for values
+		ifstream inputY("p07_v.txt");//reading the second file for values
 		if (inputY.is_open()) {
 			buildVector(inputY, value);//build the values vector
 			inputY.close();
 		}
-		ifstream inputZ("p01_w.txt");//this file has the weight values
+		ifstream inputZ("p07_w.txt");//this file has the weight values
 		if (inputZ.is_open()) {
 			buildVector(inputZ, weight);//build the weight vector
 			inputZ.close();
@@ -183,9 +185,10 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 	sort(bestVal.begin(), bestVal.end());
 	int counter = bestVal.size() - 1;
 	//display
-	cout << "Greedy Approach Optimal subset: { ";
+	
 	//
 	int totalValue = 0;
+	vector<int> displayArry;
 	while (1)//carefull
 	{
 		newTotal = newTotal + wei[bestVal[counter].second - 1];//add to total counter
@@ -195,9 +198,16 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 			break;
 		}
 		totalValue = totalValue + val[bestVal[counter].second - 1];
-		cout << bestVal[counter].second << " ";//display 
+		//cout << bestVal[counter].second << " ";//display 
+		displayArry.push_back(bestVal[counter].second);
 		counter--;
 		
+	}
+	sort(displayArry.begin(), displayArry.end());
+	cout << "Greedy Approach Optimal subset: { ";
+	for (int i = 0; i < displayArry.size(); i++)
+	{
+		cout << displayArry[i]<<" ";
 	}
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
 	cout << "}" << endl;
@@ -221,7 +231,7 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 	for (int i = 0; i < val.size(); i++)// holds the heap needs to heapify
 	{
 		//bestVal.push_back(make_pair(val[i] / wei[i], i + 1));
-		heapInsert(bestVal, val[i] / wei[i], i + 1);
+		heapInsert(bestVal, float(val[i]) / wei[i], i + 1);
 	}
 	//now use delete to sort the array
 	heapDelMax(bestVal);
@@ -229,9 +239,10 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 
 	int counter = bestVal.size()-1;
 	//display
-	cout << "Heap based Greedy Approach Optimal subset: { ";
+	cout << "Heap based Greedy Approach Optimal subset: ";
 	//
 	int totalValue = 0;
+	vector<int> displayArry1;
 	while (1)//carefull
 	{
 		newTotal = newTotal + wei[bestVal[counter].second - 1];//add to total counter
@@ -242,12 +253,19 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 		else//
 		{
 			totalValue = totalValue + val[bestVal[counter].second - 1];
-			cout << bestVal[counter].second << " ";//display 
+			//cout << bestVal[counter].second << " ";//display 
+			displayArry1.push_back(bestVal[counter].second);
 			counter--;
 		}
 	}
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
-	cout << "}" << endl;
+	cout << "{ ";
+	sort(displayArry1.begin(), displayArry1.end());
+	for (int i = 0; i < displayArry1.size(); i++)
+	{
+		cout << displayArry1[i] << " ";
+	}
+	cout << " }" << endl;
 	cout << "Heap based Greedy Approach Optimal value: " << totalValue << endl;
 	//timers
 	finishTime = clock();
@@ -258,7 +276,7 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 
 }
 
-void heapInsert(vector<pair <float,int>>& arry, int val,int index)
+void heapInsert(vector<pair <float,int>>& arry, float val,int index)
 {
 	arry.push_back(make_pair(val, index));
 	for (int m = 0; m < arry.size(); m++)
@@ -324,6 +342,12 @@ void heapDelMax(vector<pair <float,int>>& arry)
 void task2Plot()//plots all files
 {
 	PyObject* graph;
+	//Py_Initialize();//start
+
+	//FILE *fd = fopen("pythonTest.py", "r");
+	//PyRun_SimpleFileEx(fd, "pythonTest.py", 1);
+	//Py
+	//Py_Finalize();//finish
 	//BMP graph1;//create image 
 	//graph1.ReadFromFile("graph1.txt");
 	//graph1.SetSize(640, 480);//set size
