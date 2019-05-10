@@ -5,7 +5,10 @@
 #include <sstream>
 #include <algorithm>
 #include "time.h"
+#include "HashTable.hpp"
 #include <cstdlib>
+#include <cmath>
+
 
 using namespace std;
 
@@ -16,6 +19,7 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei);//uses the max he
 void heapInsert(vector< pair <float,int>> &arry, int val,int index);//insert into heap vector
 void heapDelMax(vector<pair <float,int>> &arry);//sorts the array useing the delete max algo
 int memfunction(int i, int j, vector<int> value, vector<int> weight);
+int computeKey(int i, int j, int n, int w);
 
 int main(int argc, char* argv[]) {
 	int choice;
@@ -202,7 +206,7 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	// int tempSize = value.size();
 	int tempWeight = totalWeight;
 	 //Starting with: F(tempSize, tempWeight);
-	vector<int> optimalSet;
+	vector<int> optimalSetA;
 	// w = W;
   for (int i = value.size(); i > 0 && maxValue > 0; i--) {
         if (maxValue == table[i - 1][tempWeight])
@@ -210,7 +214,7 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
         else {
 
             // This item is included -> add it & make adjustments!
-						optimalSet.push_back(i-1);
+						optimalSetA.push_back(i-1);
             maxValue -= value[i - 1];
             tempWeight -= weight[i - 1];
         }
@@ -223,11 +227,11 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 		//optimal subset
 		cout << "Traditional Dynamic Programming Optimal subset: " <<  "{";
 
-		reverse(optimalSet.begin(), optimalSet.end());
+		reverse(optimalSetA.begin(), optimalSetA.end());
 
-		for (int l = 0; l < optimalSet.size(); l++){
-			cout << optimalSet[l] +1;
-			if(l != optimalSet.size() - 1 ){
+		for (int l = 0; l < optimalSetA.size(); l++){
+			cout << optimalSetA[l] +1;
+			if(l != optimalSetA.size() - 1 ){
 				cout << ", ";
 			}
 		}
@@ -241,8 +245,9 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	startTime = clock();//timers
 	// //totalWeight
 
-
-	memfunction(value.size(), total[0], value, weight);
+	HashTable h
+	vector<int> optimalSetB
+	newTotalB = memfunction(value.size(), total[0], value, weight, h , optimalSetB);
 
 
 	finishTime = clock();
@@ -254,21 +259,35 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	// //time taken for computation
 	return;
 }
-//need wrapping function
-int memfunction(int i, int j, vector<int> value, vector<int> weight){
+int computeKey(int i, int j, int n, int w)
+{
+	//number of bits in i
+	// ceil(log(n+1, 2));
+	//number of bits in j
+	// ceil(log(w+1, 2));
+
+
+
+}
+
+
+int memfunction(int i, int j, vector<int> value, vector<int> weight, HashTable H, int n, int w){
 	int upper, replace;
-	int key = getKey(i,j);
-	if(existsHashTable(key)){
-		return findHashTable(key);
-	}else if(i==0 || j == 0){
+	int existsValue = -1;
+
+	int key = computeKey(i, j, n,w);
+
+	if(i==0 || j == 0){
 		return 0;
-
-
+	}else if(H.getKeyInTable(key, existsValue)) {
+		return existsValue;
 	}else if(j - weight[i-1] >= 0){//we know at this point we have a value that is 0 or doesn't exist in the hash table
 
 		//if we go here then we can potentially grab a item i
+		int upperKey = computeKey(i-1, j);
+		int replaceKey = computeKey(i-1, j - weight[i-1]);
 		upper = memfunction(i-1, j, value, weight);
-		replace = value[i-1] + memfunction(i-1, j, value, weight);
+		replace = value[i-1] + memfunction(i-1, j-weight[i-1], value, weight, H, n, w);
 		//push upper to hash table
 		//push replace to hash table
 		if(upper > replace){
@@ -279,20 +298,14 @@ int memfunction(int i, int j, vector<int> value, vector<int> weight){
 
 	}else{
 		key = getKey(i-1, j)
-		if existsHashTable(key){
-				return memfunction(i-1,j, value, weight);
+		if existsHashTable(key, i, j){
+				return memfunction(i-1,j, value, weight, H, n, w);
 		}else{
-				upper = memfunction(i-1,j, value, weight);
+				upper = memfunction(i-1,j, value, weight, H, n, w);
 				//push upper into hash table
 				return upper;
 		}
 	}
-
-
-
-
-
-
 
 }
 
