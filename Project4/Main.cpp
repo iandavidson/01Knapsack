@@ -94,13 +94,13 @@ int main(int argc, char* argv[]) {
 		//fix if possible
 
 		new_argv.push_back("");//for const sake
-		cout << "please enter (c) or count:";
+		cout << "please enter count file:";
 		new_argv.push_back("");//for const sake
 		cin >> new_argv[1];//c
-		cout << endl << "please enter (v) or values: ";
+		cout << "please enter value file: ";
 		new_argv.push_back("");//for const sake
 		cin >> new_argv[2];//v
-		cout << endl << "please enter (w) or weight: ";
+		cout << "please enter weight file: ";
 		new_argv.push_back("");//for const sake
 		cin >> new_argv[3];//w
 		cout << endl;
@@ -109,17 +109,17 @@ int main(int argc, char* argv[]) {
 
 	if (noInputTripper == 1)//user input vs command line
 	{
-		ifstream inputX("p01_c.txt");//reading file one getting the total sack
+		ifstream inputX(new_argv[1]);//reading file one getting the total sack
 		if (inputX.is_open()) {
 			buildVector(inputX, total);//build the total vector
 			inputX.close();
 		}
-		ifstream inputY("p01_v.txt");//reading the second file for values
+		ifstream inputY(new_argv[2]);//reading the second file for values
 		if (inputY.is_open()) {
 			buildVector(inputY, value);//build the values vector
 			inputY.close();
 		}
-		ifstream inputZ("p01_w.txt");//this file has the weight values
+		ifstream inputZ(new_argv[3]);//this file has the weight values
 		if (inputZ.is_open()) {
 			buildVector(inputZ, weight);//build the weight vector
 			inputZ.close();
