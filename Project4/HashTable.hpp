@@ -1,4 +1,10 @@
 
+//
+// #ifndef HASHTABLE_HPP
+// #define HASHTABLE_HPP
+
+
+
 #include <list>
 #include <iostream>
 
@@ -8,17 +14,24 @@ using namespace std;
 class HashTable {
 private:
     struct node {
+      int unique;
+      int value;
       node(){
         unique = -1;
         value =-1;
       }
-      node(l, val):unique(l), value(val){}
-      int unique;
-      int value;
+      node(int l, int val){
+        unique = l;
+        value = val;
+      }
 
-    }
+
+    };
 public:
-  HashTable(slots){
+  list<node> *table;
+  int k; //# of slots in hashTable
+
+  HashTable(int slots){
     this->k = slots;
     this->table = new list<node>[this->k];
   }
@@ -28,14 +41,13 @@ public:
   }
 
   bool getKeyInTable(int key, int & keyValue){
-    {
       int index = hashKey(key);
 
       // find the key in (i)th list
       list <node>::iterator i;
       for (i = table[index].begin(); i != table[index].end(); i++) {
-        if (*i->unique == key){
-          keyValue = *i->value;
+        if (i->unique == key){
+          keyValue = i->value;
           return true;
         }
       }
@@ -44,10 +56,14 @@ public:
 
   void insertNode(int key, int val){
     int slot = hashKey(key);
-    table[slot].push_back(node(key, val)); //not sure if this works lol
+    node n;
+        n.unique = key;
+        n.value = val;
+    table[slot].push_back(n);
   }
 
-  list<node> table;
-  int k; //# of slots in hashTable
 
 };
+
+
+// #endif
