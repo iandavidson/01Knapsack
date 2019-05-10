@@ -59,6 +59,7 @@ public:
       list <node>::iterator i;
       for (i = table[index].begin(); i != table[index].end(); i++) {
         if (i->unique == key){
+					// cout << "node instance:"<< i->value << endl;
           keyValue = i->value;
           return true;
         }
@@ -71,6 +72,7 @@ public:
     node n;
         n.unique = key;
         n.value = val;
+		// cout << "node:" << n.value << "  " << n.unique << endl;
     table[slot].push_back(n);
   }
 
@@ -306,69 +308,108 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	//Space-efficient Dynamic Programming
 	int newTotalB = 0;
 	startTime = clock();//timers
-	// //totalWeight
+	//totalWeight
 
 	int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+	// cout << "size of hash table: " << k <<  endl;
 	HashTable h = HashTable(k);
-	// vector<int> optimalSetB;
+
 	newTotalB = memFunction(value.size(), total[0], value, weight, h, value.size(), total[0]);
 
+	int key = 0;
+	int existsValue = 0;
+	vector<int> optimalSetB;
+	// w = W;
+	maxValue = newTotalB;
+	tempWeight = total[0];
+  for (int i = value.size(); i > 0 && maxValue > 0; i--) {
+
+
+				key = computeKey(i-1, tempWeight, value.size(), total[0]);
+				h.getKeyInTable(key, existsValue);
+
+
+        if (maxValue == existsValue)
+            continue;
+        else {
+            // This item is included -> add it & make adjustments!
+						optimalSetB.push_back(i-1);
+            maxValue -= value[i - 1];
+            tempWeight -= weight[i - 1];
+        }
+
+				existsValue = -1;
+    }
 
 	finishTime = clock();
 	totalTime = (double)(finishTime - startTime)/CLOCKS_PER_SEC;
 
 
 	cout << "Space-efficient Dynamic Programming optimal subset value: " << newTotalB << endl;
-	cout << "Space-efficient Dynamic Programming optimal subset: " << endl;
+	cout << "Space-efficient Dynamic Programming optimal subset: {";
+
+
+	reverse(optimalSetB.begin(), optimalSetB.end());
+
+	for (int l = 0; l < optimalSetB.size(); l++){
+		cout << optimalSetB[l] +1;
+		if(l != optimalSetB.size() - 1 ){
+			cout << ", ";
+		}
+	}
+	cout << "}" << endl;
+
+
 	cout << "Space-efficient Dynamic Programming time taken: " << totalTime << endl;
 
 	return;
 }
 int computeKey(int i, int j, int n, int w)
 {
+	// cout << "made it into computeKey; i:"  << i << " j:" << j << " n:" << n << " w:" << w << endl;
 	//number of bits in n
 	int Bn = (int)ceil(log2((double)(n+1)));
 	//number of bits in w
 	int Bw = (int)ceil(log2((double)(w+1)));
-
+	// cout << "Bn: " << Bn << "  Bw: " << Bw << endl;
 	//number of bits in i
 	int Bi = (int)ceil(log2((double)(i+1)));
 	//number of bits in j
 	int Bj = (int)ceil(log2((double)(j+1)));
+	// cout << "Bi: " << Bi << "  Bj: " << Bj << endl;
+
 
 	int value = 1 <<  (Bn + Bw); //value: 1<size of N + size of W>
 	int result = i << Bw; //result  <i><size of w>
-	result = result | j; // result: <i><j>
-	result = result | value; //result: 1<i><j>
+	result = result|value; // result: <i><j>
+	result = result|j; //result: 1<i><j>
 	return result;
 
 }
 
 
 int memFunction(int i, int j, vector<int> value, vector<int> weight, HashTable & H, int n, int w){
+	// cout << "made it into memFunction with i :" << i << " j:" << j << endl;
 	int upper, replace;
 	int existsValue = -1;
 
 	int key = computeKey(i, j, n,w);
 
 	if(i==0 || j == 0){
+		// cout << "hit base case, i or j == 0" << endl;
 		return 0;
 	}else if(H.getKeyInTable(key, existsValue)) {
+		// cout << "key already existed." << endl;
 		return existsValue;
-	}else if(j < weight[i-1]){//we know at this point we have a value that is 0 or doesn't exist in the hash table
+	}else if(j >= weight[i-1]){//we know at this point we have a value that is 0 or doesn't exist in the hash table
 
 		//if we go here then we can potentially grab a item i
 		// upperKey = computeKey(i-1, j);
 		// replaceKey = computeKey(i-1, j - weight[i-1]);
-
 		upper = memFunction(i-1, j, value, weight, H, n, w);
 		replace = value[i-1] + memFunction(i-1, j-weight[i-1], value, weight, H, n, w);
 
 
-		// //push upper to hash table
-		// H.insertNode(upperKey, upper);
-		// //push replace to hash table
-		// H.insertNode(replaceKey, replace);
 		if(upper < replace){
 			H.insertNode(key, replace);
 			return replace;
@@ -384,9 +425,6 @@ int memFunction(int i, int j, vector<int> value, vector<int> weight, HashTable &
 				return upper;
 	}
 }
-
-
-
 
 
 void task2a(vector<int> tol, vector<int> val, vector<int> wei)
