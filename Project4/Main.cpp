@@ -16,7 +16,7 @@ void buildVector(ifstream & input,vector<int> &temp);//takes the input from a fi
 void task1(vector<int> total, vector<int> value, vector<int> weight);
 void task2a(vector<int> tol, vector<int> val, vector<int> wei);//uses greedy to find the best set
 void task2b(vector<int> tol, vector<int> val, vector<int> wei);//uses the max heap to find best greedy set
-void heapInsert(vector< pair <float,int>> &arry, int val,int index);//insert into heap vector
+void heapInsert(vector< pair <float,int>> &arry, float val,int index);//insert into heap vector
 void heapDelMax(vector<pair <float,int>> &arry);//sorts the array useing the delete max algo
 int memFunction(int i, int j, vector<int> value, vector<int> weight, HashTable & H, int n, int w);
 int computeKey(int i, int j, int n, int w);
@@ -436,23 +436,24 @@ int memFunction(int i, int j, vector<int> value, vector<int> weight, HashTable &
 void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 {
 	//sort arrays then print out
-	vector<pair <float,int>> bestVal;//hold the ratio for best weight to value first(val),second(wei) by subset
+	vector<pair <float, int>> bestVal;//hold the ratio for best weight to value first(val),second(wei) by subset
 	int newTotal = 0;
 	double totalTime, finishTime, startTime = clock();//timers
 
 
 	for (int i = 0; i < val.size(); i++)
 	{
-		bestVal.push_back(make_pair (float (val[i]) / wei[i], i + 1));
+		bestVal.push_back(make_pair(float(val[i]) / wei[i], i + 1));
 	}
 
 	//sort the array
 	sort(bestVal.begin(), bestVal.end());
 	int counter = bestVal.size() - 1;
 	//display
-	cout << "Greedy Approach Optimal subset: { ";
+
 	//
 	int totalValue = 0;
+	vector<int> displayArry;
 	while (1)//carefull
 	{
 		newTotal = newTotal + wei[bestVal[counter].second - 1];//add to total counter
@@ -462,9 +463,16 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 			break;
 		}
 		totalValue = totalValue + val[bestVal[counter].second - 1];
-		cout << bestVal[counter].second << " ";//display
+		//cout << bestVal[counter].second << " ";//display 
+		displayArry.push_back(bestVal[counter].second);
 		counter--;
 
+	}
+	sort(displayArry.begin(), displayArry.end());
+	cout << "Greedy Approach Optimal subset: { ";
+	for (int i = 0; i < displayArry.size(); i++)
+	{
+		cout << displayArry[i] << " ";
 	}
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
 	cout << "}" << endl;
@@ -488,17 +496,18 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 	for (int i = 0; i < val.size(); i++)// holds the heap needs to heapify
 	{
 		//bestVal.push_back(make_pair(val[i] / wei[i], i + 1));
-		heapInsert(bestVal, val[i] / wei[i], i + 1);
+		heapInsert(bestVal, float(val[i]) / wei[i], i + 1);
 	}
 	//now use delete to sort the array
 	heapDelMax(bestVal);
 	//arry now sorted backwards
 
-	int counter = bestVal.size()-1;
+	int counter = bestVal.size() - 1;
 	//display
-	cout << "Heap based Greedy Approach Optimal subset: { ";
+	cout << "Heap based Greedy Approach Optimal subset: ";
 	//
 	int totalValue = 0;
+	vector<int> displayArry1;
 	while (1)//carefull
 	{
 		newTotal = newTotal + wei[bestVal[counter].second - 1];//add to total counter
@@ -509,12 +518,19 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 		else//
 		{
 			totalValue = totalValue + val[bestVal[counter].second - 1];
-			cout << bestVal[counter].second << " ";//display
+			//cout << bestVal[counter].second << " ";//display 
+			displayArry1.push_back(bestVal[counter].second);
 			counter--;
 		}
 	}
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
-	cout << "}" << endl;
+	cout << "{ ";
+	sort(displayArry1.begin(), displayArry1.end());
+	for (int i = 0; i < displayArry1.size(); i++)
+	{
+		cout << displayArry1[i] << " ";
+	}
+	cout << " }" << endl;
 	cout << "Heap based Greedy Approach Optimal value: " << totalValue << endl;
 	//timers
 	finishTime = clock();
@@ -525,7 +541,7 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 
 }
 
-void heapInsert(vector<pair <float,int>>& arry, int val,int index)
+void heapInsert(vector<pair <float,int>>& arry, float val,int index)
 {
 	arry.push_back(make_pair(val, index));
 	for (int m = 0; m < arry.size(); m++)
