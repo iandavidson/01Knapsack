@@ -245,7 +245,12 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 	int currentValue= 0;
   // cout << "right before creating table" << endl;
 	//construct a 2d array of size (value.size() +1, totalWeight + 1)
-	int table [value.size() + 1][totalWeight + 1];
+	// int table [value.size() + 1][totalWeight + 1];
+  int **table = new int*[value.size() + 1];
+  for (size_t i = 0; i < value.size() + 1; i++) {
+    table[i] = new int[totalWeight + 1];
+  }
+
   // cout << "created table" << endl;
 	for (int i=0; i< value.size() + 1; i++ ){
 		for (int j=0; j < totalWeight + 1; j++){
@@ -314,12 +319,22 @@ void task1(vector<int> total, vector<int> value, vector<int> weight)
 		//time taken for computation
 		cout << "Traditional Dynamic Programming Time Taken: " << totalTime << endl << endl;
 
+  //destruct table
+
+  for (int i = value.size(); i > 0; i-- ) {
+      delete[] table[i];
+   }
+   delete[] table;
+
+
+
 	//Space-efficient Dynamic Programming
 	int newTotalB = 0;
 	startTime = clock();//timers
 	//totalWeight
 
-	int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+	// int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+  int k = total[0];
 	// cout << "size of hash table: " << k <<  endl;
 	HashTable h = HashTable(k);
 
@@ -657,30 +672,24 @@ void task3a(){
 		if (input.is_open()) {
 			buildVector(input, count);//build the total vector
 			input.close();
-		}else{
-      cout << "count not reading" << endl;
-    }
+		}
 		input2.open(v);//reading the second file for values
 		if (input2.is_open()) {
 			buildVector(input2, value);//build the values vector
 			input2.close();
 
-		}else{
-      cout << "values not reading" << endl;
-    }
+		}
 		input3.open(w);//this file has the weight values
 		if (input3.is_open()) {
 			buildVector(input3, weight);//build the weight vector
 			input3.close();
-    }else{
-      cout << "weight not reading" << endl;
     }
     // cout << "started A" << " count: " << &count << " value: " << &value << " weight: " << &weight <<endl;
     //call problem 1a
     temp = task1aHelper(count, value, weight);
     timeA.push_back(temp);
 
-    cout << "started B" <<endl;
+    //cout << "started B" <<endl;
     //call problem 1b
     temp = task1bHelper(count, value, weight);
     timeB.push_back(temp);
@@ -706,7 +715,13 @@ double task1aHelper(vector<int> total, vector<int> value, vector<int> weight){
 
     // cout << "about to create table  " ;
   	//construct a 2d array of size (value.size() +1, totalWeight + 1)
-  	int table [value.size() + 1][totalWeight + 1];
+  	// int table [value.size() + 1][totalWeight + 1];
+    int **table = new int*[value.size() + 1];
+    for (size_t i = 0; i < value.size() + 1; i++) {
+      table[i] = new int[totalWeight + 1];
+    }
+
+
     // cout << "succesfully created table  " << endl;
   	for (int i=0; i< value.size() + 1; i++ ){
   		for (int j=0; j < totalWeight + 1; j++){
@@ -757,6 +772,14 @@ double task1aHelper(vector<int> total, vector<int> value, vector<int> weight){
 
   	finishTime = clock();
   	totalTime = (double)(finishTime - startTime)/CLOCKS_PER_SEC;
+
+
+    for (int i = value.size(); i > 0; i-- ) {
+        delete[] table[i];
+     }
+     delete[] table;
+
+
     // cout << "aTotalTime: " << totalTime;
     return totalTime;
 }
@@ -767,7 +790,8 @@ double task1bHelper(vector<int> total, vector<int> value, vector<int> weight){
   startTime = clock();//timers
   //totalWeight
 
-  int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+  // int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+  int k = total[0];
   // cout << "size of hash table: " << k <<  endl;
   HashTable h = HashTable(k);
 
@@ -806,6 +830,6 @@ double task1bHelper(vector<int> total, vector<int> value, vector<int> weight){
 
   finishTime = clock();
   totalTime = (double)(finishTime - startTime)/CLOCKS_PER_SEC;
-  cout << "  bTotalTime: " << totalTime << endl;
+  // cout << "  bTotalTime: " << totalTime << endl;
   return totalTime;
 }
