@@ -153,7 +153,7 @@ int main(int argc, char* argv[]) {
 
 			while (1) {
 				choice = 0;
-				cout << "Options: (1) display vectors, (2) quit, (3)Run 1 and 2 (4) Run 3 :";
+				cout << "Options: (1) display vectors, (2) quit, (3)Run 1 and 2 (4) Run 3a :";
 				cin >> choice;
 
 
@@ -185,7 +185,9 @@ int main(int argc, char* argv[]) {
 					{
 						cout << endl << "Knapsack capacity = " << total[0];
 						cout << ". Total number of items = " << value.size() << endl << endl;
+
 						task1(total, value, weight);
+            cout << "made it throught task1" << endl;
 						task2a(total, value, weight);
 						task2b(total, value, weight);
 					}
@@ -234,15 +236,17 @@ void buildVector(ifstream & input, vector<int> &temp)
 
 void task1(vector<int> total, vector<int> value, vector<int> weight)
 {
+
+  // cout << "made it into task1" << endl;
 	int totalWeight = total[0];
 
 	//Traditional Dynamic Programming
 	double totalTime, finishTime, startTime = clock();//timers
 	int currentValue= 0;
-
+  // cout << "right before creating table" << endl;
 	//construct a 2d array of size (value.size() +1, totalWeight + 1)
 	int table [value.size() + 1][totalWeight + 1];
-
+  // cout << "created table" << endl;
 	for (int i=0; i< value.size() + 1; i++ ){
 		for (int j=0; j < totalWeight + 1; j++){
 					//F(i,j)= (if j−w i≥0: max{F(i−1,j),v[i]+F(i−1,j−w[i])},
@@ -640,7 +644,7 @@ void task3a(){
   string c, v, w;
   vector<double> timeA, timeB;
   for (int i=0; i < 9; i++){
-
+  double temp = 0;
     c = table[i][0];
     v = table[i][1];
     w = table[i][2];
@@ -653,22 +657,33 @@ void task3a(){
 		if (input.is_open()) {
 			buildVector(input, count);//build the total vector
 			input.close();
-		}
+		}else{
+      cout << "count not reading" << endl;
+    }
 		input2.open(v);//reading the second file for values
 		if (input2.is_open()) {
 			buildVector(input2, value);//build the values vector
 			input2.close();
-		}
+
+		}else{
+      cout << "values not reading" << endl;
+    }
 		input3.open(w);//this file has the weight values
 		if (input3.is_open()) {
 			buildVector(input3, weight);//build the weight vector
 			input3.close();
+    }else{
+      cout << "weight not reading" << endl;
     }
+    // cout << "started A" << " count: " << &count << " value: " << &value << " weight: " << &weight <<endl;
     //call problem 1a
-    timeA.push_back(task1aHelper(count, value, weight));
+    temp = task1aHelper(count, value, weight);
+    timeA.push_back(temp);
 
+    cout << "started B" <<endl;
     //call problem 1b
-    timeB.push_back(task1bHelper(count, value, weight));
+    temp = task1bHelper(count, value, weight);
+    timeB.push_back(temp);
 
     cout << "i: " << i << " a: " << timeA[i] << " b: " << timeB[i] << " n: " << value.size() << " w: " << count[0] << endl;
 
@@ -676,19 +691,23 @@ void task3a(){
     count.clear();
     value.clear();
     weight.clear();
+
   }
 }
 
 double task1aHelper(vector<int> total, vector<int> value, vector<int> weight){
+    // cout << "made it into task1 helper    ";
     int totalWeight = total[0];
 
   	//Traditional Dynamic Programming
   	double totalTime, finishTime, startTime = clock();//timers
   	int currentValue= 0;
 
+
+    // cout << "about to create table  " ;
   	//construct a 2d array of size (value.size() +1, totalWeight + 1)
   	int table [value.size() + 1][totalWeight + 1];
-
+    // cout << "succesfully created table  " << endl;
   	for (int i=0; i< value.size() + 1; i++ ){
   		for (int j=0; j < totalWeight + 1; j++){
   					//F(i,j)= (if j−w i≥0: max{F(i−1,j),v[i]+F(i−1,j−w[i])},
@@ -738,7 +757,7 @@ double task1aHelper(vector<int> total, vector<int> value, vector<int> weight){
 
   	finishTime = clock();
   	totalTime = (double)(finishTime - startTime)/CLOCKS_PER_SEC;
-    cout << "aTotalTime: " << totalTime;
+    // cout << "aTotalTime: " << totalTime;
     return totalTime;
 }
 double task1bHelper(vector<int> total, vector<int> value, vector<int> weight){
