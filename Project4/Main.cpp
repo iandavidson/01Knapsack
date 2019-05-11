@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <cmath>
 #include <list>
-
+#include <string>
 using namespace std;
 
 class HashTable;
@@ -16,10 +16,15 @@ void buildVector(ifstream & input,vector<int> &temp);//takes the input from a fi
 void task1(vector<int> total, vector<int> value, vector<int> weight);
 void task2a(vector<int> tol, vector<int> val, vector<int> wei);//uses greedy to find the best set
 void task2b(vector<int> tol, vector<int> val, vector<int> wei);//uses the max heap to find best greedy set
+void task3a();
 void heapInsert(vector< pair <float,int>> &arry, float val,int index);//insert into heap vector
 void heapDelMax(vector<pair <float,int>> &arry);//sorts the array useing the delete max algo
 int memFunction(int i, int j, vector<int> value, vector<int> weight, HashTable & H, int n, int w);
 int computeKey(int i, int j, int n, int w);
+
+
+double task1aHelper(vector<int> total, vector<int> value, vector<int> weight);
+double task1bHelper(vector<int> total, vector<int> value, vector<int> weight);
 
 
 //am going to use node struct as the type of list to store i, j, value and hashed value
@@ -185,7 +190,7 @@ int main(int argc, char* argv[]) {
 						task2b(total, value, weight);
 					}
 					else if(choice ==4){
-						cout << "dont have the task 3 done" << endl;
+						task3a();
 					}
 			}
 	return 0;
@@ -463,11 +468,15 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 			break;
 		}
 		totalValue = totalValue + val[bestVal[counter].second - 1];
-		//cout << bestVal[counter].second << " ";//display 
+		//cout << bestVal[counter].second << " ";//display
 		displayArry.push_back(bestVal[counter].second);
 		counter--;
 
 	}
+
+
+  cout << "Greedy Approach Optimal value: " << totalValue << endl;
+
 	sort(displayArry.begin(), displayArry.end());
 	cout << "Greedy Approach Optimal subset: { ";
 	for (int i = 0; i < displayArry.size(); i++)
@@ -475,8 +484,7 @@ void task2a(vector<int> tol, vector<int> val, vector<int> wei)
 		cout << displayArry[i] << " ";
 	}
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
-	cout << "}" << endl;
-	cout << "Greedy Approach Optimal value: " << totalValue << endl;
+  cout << "}" << endl;
 	//timers
 	finishTime = clock();
 	totalTime = (double)(finishTime - startTime) / CLOCKS_PER_SEC;
@@ -504,7 +512,8 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 
 	int counter = bestVal.size() - 1;
 	//display
-	cout << "Heap based Greedy Approach Optimal subset: ";
+
+
 	//
 	int totalValue = 0;
 	vector<int> displayArry1;
@@ -518,11 +527,15 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 		else//
 		{
 			totalValue = totalValue + val[bestVal[counter].second - 1];
-			//cout << bestVal[counter].second << " ";//display 
+			//cout << bestVal[counter].second << " ";//display
 			displayArry1.push_back(bestVal[counter].second);
 			counter--;
 		}
 	}
+  cout << "Heap based Greedy Approach Optimal value: " << totalValue << endl;
+
+	cout << "Heap based Greedy Approach Optimal subset: ";
+
 	//newTotal = newTotal - wei[bestVal[counter].second - 1];//add to total counter
 	cout << "{ ";
 	sort(displayArry1.begin(), displayArry1.end());
@@ -531,7 +544,7 @@ void task2b(vector<int> tol, vector<int> val, vector<int> wei)
 		cout << displayArry1[i] << " ";
 	}
 	cout << " }" << endl;
-	cout << "Heap based Greedy Approach Optimal value: " << totalValue << endl;
+
 	//timers
 	finishTime = clock();
 	totalTime = (double)(finishTime - startTime) / CLOCKS_PER_SEC;
@@ -602,4 +615,178 @@ void heapDelMax(vector<pair <float,int>>& arry)
 		}
 	}
 
+}
+
+
+void task3a(){
+  // Produce a graph that compares the time and space taken by dynamic programming approaches
+  //(1a and 1b) for all the input cases.
+  // Note: x-axis is space and y-axis is time.
+  // To accommodate varying range for the values of space,
+  //x-axis can have a logarithmic scale instead of a linear scale.
+  string table [10][3] = {
+    {"p00_c.txt", "p00_v.txt", "p00_w.txt"},
+    {"p01_c.txt", "p01_v.txt", "p01_w.txt"},
+    {"p02_c.txt", "p02_v.txt", "p02_w.txt"},
+    {"p03_c.txt", "p03_v.txt", "p03_w.txt"},
+    {"p04_c.txt", "p04_v.txt", "p04_w.txt"},
+    {"p05_c.txt", "p05_v.txt", "p05_w.txt"},
+    {"p06_c.txt", "p06_v.txt", "p06_w.txt"},
+    {"p07_c.txt", "p07_v.txt", "p07_w.txt"},
+    {"p08_c.txt", "p08_v.txt", "p08_w.txt"}
+  };
+  vector<int> count, value, weight;
+  ifstream input, input2,input3;
+  string c, v, w;
+  vector<double> timeA, timeB;
+  for (int i=0; i < 9; i++){
+
+    c = table[i][0];
+    v = table[i][1];
+    w = table[i][2];
+    // cout << "count:" << c << ", value:" << v << ", weight:" << w << endl;
+
+
+
+
+    input.open(c);//reading file one getting the total sack
+		if (input.is_open()) {
+			buildVector(input, count);//build the total vector
+			input.close();
+		}
+		input2.open(v);//reading the second file for values
+		if (input2.is_open()) {
+			buildVector(input2, value);//build the values vector
+			input2.close();
+		}
+		input3.open(w);//this file has the weight values
+		if (input3.is_open()) {
+			buildVector(input3, weight);//build the weight vector
+			input3.close();
+    }
+    //call problem 1a
+    timeA.push_back(task1aHelper(count, value, weight));
+
+    //call problem 1b
+    timeB.push_back(task1bHelper(count, value, weight));
+
+    cout << "i: " << i << " a: " << timeA[i] << " b: " << timeB[i] << " n: " << value.size() << " w: " << count[0] << endl;
+
+
+    count.clear();
+    value.clear();
+    weight.clear();
+  }
+}
+
+double task1aHelper(vector<int> total, vector<int> value, vector<int> weight){
+    int totalWeight = total[0];
+
+  	//Traditional Dynamic Programming
+  	double totalTime, finishTime, startTime = clock();//timers
+  	int currentValue= 0;
+
+  	//construct a 2d array of size (value.size() +1, totalWeight + 1)
+  	int table [value.size() + 1][totalWeight + 1];
+
+  	for (int i=0; i< value.size() + 1; i++ ){
+  		for (int j=0; j < totalWeight + 1; j++){
+  					//F(i,j)= (if j−w i≥0: max{F(i−1,j),v[i]+F(i−1,j−w[i])},
+  			 				// {if j−w[i] i<0: F(i−1,j)})
+
+  				//base case: (i or j) = 0; => we assign 0 b/c its no items or 0 weight
+  				if(i ==0 || j == 0){
+  					table[i][j] = 0;
+  				}else if(weight[i-1] <= j){ //if the item we are looking at is small enough to add/replace in subset
+  					currentValue = table[i-1][j - weight[i-1]]+ value[i-1];
+  					if(currentValue > table[i-1][j]){
+  						table[i][j]= currentValue;
+  					}else{
+  						table[i][j] = table[i-1][j];
+  					}
+  				}else{ //if the new possible item is too heavy to add.
+  						table[i][j] = table[i-1][j];
+  				}
+  		}
+  	}
+
+  	// for (int i=0; i< value.size() + 1; i++ ){
+  	// 	for (int j=0; j < totalWeight + 1; j++){
+  	// 		cout << table[i][j] << "  ";
+  	// 	}
+  	// 	cout << endl;
+  	// }
+
+  	int maxValue = table[value.size()][totalWeight];
+  	//backtrace w/ while loop  and insert into optimalSet
+  	// int tempSize = value.size();
+  	int tempWeight = totalWeight;
+  	 //Starting with: F(tempSize, tempWeight);
+  	vector<int> optimalSetA;
+  	// w = W;
+    for (int i = value.size(); i > 0 && maxValue > 0; i--) {
+          if (maxValue == table[i - 1][tempWeight])
+              continue;
+          else {
+
+              // This item is included -> add it & make adjustments!
+  						optimalSetA.push_back(i-1);
+              maxValue -= value[i - 1];
+              tempWeight -= weight[i - 1];
+          }
+      }
+
+  	finishTime = clock();
+  	totalTime = (double)(finishTime - startTime)/CLOCKS_PER_SEC;
+    cout << "aTotalTime: " << totalTime;
+    return totalTime;
+}
+double task1bHelper(vector<int> total, vector<int> value, vector<int> weight){
+  int newTotalB = 0;
+  double startTime, finishTime, totalTime;
+  int tempWeight, maxValue;
+  startTime = clock();//timers
+  //totalWeight
+
+  int k = (int)ceil(sqrt((double)(value.size() *total[0]/2))); //nasty!
+  // cout << "size of hash table: " << k <<  endl;
+  HashTable h = HashTable(k);
+
+  newTotalB = memFunction(value.size(), total[0], value, weight, h, value.size(), total[0]);
+
+  int key = 0;
+  int existsValue = 0;
+  vector<int> optimalSetB;
+  // w = W;
+  maxValue = newTotalB;
+  tempWeight = total[0];
+  for (int i = value.size(); i > 0 && maxValue > 0; i--) {
+
+
+        key = computeKey(i-1, tempWeight, value.size(), total[0]);
+        h.getKeyInTable(key, existsValue);
+        // cout << "maxValue found: " << maxValue << " tempWeight: " << tempWeight << endl;
+
+        if(i == 1 && weight[i-1] <= tempWeight){ //weird edge case i couldn't cover for some reason
+          // cout << "just found index: " << i-1 << endl << endl;
+          optimalSetB.push_back(i-1);
+          maxValue -= value[i - 1];
+          tempWeight -= weight[i - 1];
+        }else if (maxValue == existsValue){
+            continue;
+        }else {
+            // This item is included -> add it & make adjustments!
+            // cout << "just found index: " << i-1 << endl << endl;
+            optimalSetB.push_back(i-1);
+            maxValue -= value[i - 1];
+            tempWeight -= weight[i - 1];
+        }
+
+        existsValue = -1;
+    }
+
+  finishTime = clock();
+  totalTime = (double)(finishTime - startTime)/CLOCKS_PER_SEC;
+  cout << "  bTotalTime: " << totalTime << endl;
+  return totalTime;
 }
